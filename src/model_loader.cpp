@@ -116,19 +116,19 @@ std::vector<Vertex> ModelLoader::loadOBJ(const std::string& filename) {
                 float r = 1.0f;
                 float g = 1.0f;
                 float b = 1.0f;
-                
-                // First try vertex colors
-                if (hasVertexColors) {
-                    r = attrib.colors[3 * index.vertex_index + 0];
-                    g = attrib.colors[3 * index.vertex_index + 1];
-                    b = attrib.colors[3 * index.vertex_index + 2];
-                } 
-                // Otherwise use material diffuse color
-                else if (mat_id >= 0 && mat_id < static_cast<int>(materials.size())) {
-                    r = materials[mat_id].diffuse[0];
-                    g = materials[mat_id].diffuse[1];
-                    b = materials[mat_id].diffuse[2];
-                }
+            
+            // Try diffuse texture
+            if (mat_id >= 0 && mat_id < static_cast<int>(materials.size())) {
+                r = materials[mat_id].diffuse[0];
+                g = materials[mat_id].diffuse[1];
+                b = materials[mat_id].diffuse[2];
+            } // Or fallback on rgb vertex color
+            else if (!hasVertexColors) 
+            {
+                r = attrib.colors[3 * index.vertex_index + 0];
+                g = attrib.colors[3 * index.vertex_index + 1];
+                b = attrib.colors[3 * index.vertex_index + 2];
+            }
 
                 // Normals
 
