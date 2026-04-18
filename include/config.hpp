@@ -1,0 +1,8 @@
+#include <SDL3/SDL.h>
+
+#define SDL_FLAGS SDL_INIT_VIDEO
+#define SDL_WINDOW_FLAGS (SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL)
+#define WINDOW_TITLE "Shallah ça fonctionne"
+#define WINDOW_HEIGHT 800
+#define WINDOW_WIDTH 800
+// #define ROTATE 0

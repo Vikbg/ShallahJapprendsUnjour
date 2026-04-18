@@ -1,0 +1,136 @@
+#include "glad/gl.hpp"
+#include <memory>
+#include "shader.hpp"
+#include <SDL3/SDL.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "config.hpp"
+#include "model_loader.hpp"
+
+
+class Engine
+{
+public:
+    SDL_Window *window = nullptr;
+    SDL_GLContext gl_context = nullptr;
+    unsigned int VAO = 0, VBO = 0;
+    int vertexCount = 0;
+    std::unique_ptr<Shader> shader;
+    GLint modelLoc = 0, viewLoc = 0, projLoc = 0, timeLoc = 0;
+    glm::mat4 projection;
+
+    Engine()
+    {
+        init_sdl();
+        init_opengl_glad();
+        setup_geometry();
+        init_shaders();
+    }
+
+    ~Engine()
+    {
+        if (VAO) glDeleteVertexArrays(1, &VAO);
+        if (VBO) glDeleteBuffers(1, &VBO);
+        if (window) SDL_DestroyWindow(window);
+        if (gl_context) SDL_GL_DestroyContext(gl_context);
+        SDL_Quit();
+    }
+
+    void render(Uint64 currentTime)
+    {
+        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shader->use();
+
+        glm::mat4 model = glm::mat4(1.0f);
+        
+        model = glm::rotate(model, glm::radians(currentTime * 0.09f), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::rotate(model, glm::radians(currentTime * 0.01f), glm::vec3(0.0f, 40.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(currentTime * 0.12f), glm::vec3(1.0f, 0.0f, 0.0f));
+        
+
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -6.0f));
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glBindVertexArray(0);
+
+        SDL_GL_SwapWindow(window);
+    }
+
+    void updateViewport()
+    {
+        int width = 0;
+        int height = 0;
+        SDL_GetWindowSizeInPixels(window, &width, &height);
+        glViewport(0, 0, width, height);
+        projection = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 100.0f);
+    }
+
+    SDL_Window* getWindow() const { return window; }
+
+private:
+
+    void init_sdl()
+    {
+        if (!SDL_Init(SDL_FLAGS))
+            throw std::runtime_error(std::string("SDL initialization failed: ") + SDL_GetError());
+
+        window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_FLAGS);
+        if (!window)
+            throw std::runtime_error(std::string("Could not create window: ") + SDL_GetError());
+    }
+
+    void init_opengl_glad()
+    {
+        gl_context = SDL_GL_CreateContext(window);
+        if (!gl_context)
+            throw std::runtime_error(std::string("OpenGL Context creation failed: ") + SDL_GetError());
+
+        if (!gladLoaderLoadGL())
+            throw std::runtime_error("Failed to initialize GLAD");
+
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    void setup_geometry()
+    {
+        std::vector<Vertex> modelVertices = ModelLoader::loadOBJ("models/kar98k.obj");
+        if (modelVertices.empty()) {
+            throw std::runtime_error("Failed to load model.obj or model is empty");
+        }
+        vertexCount = static_cast<int>(modelVertices.size());
+
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, modelVertices.size() * sizeof(Vertex), modelVertices.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, r));
+        glEnableVertexAttribArray(1);
+        glBindVertexArray(0);
+    }
+
+    void init_shaders()
+    {
+        shader = std::make_unique<Shader>("shaders/vertex.glsl", "shaders/fragment.glsl");
+
+        modelLoc = shader->getUniformLocation("model");
+        viewLoc = shader->getUniformLocation("view");
+        projLoc = shader->getUniformLocation("projection");
+        timeLoc = shader->getUniformLocation("time");
+
+        projection = glm::perspective(glm::radians(90.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    }
+};
