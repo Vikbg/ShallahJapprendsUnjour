@@ -20,10 +20,10 @@ void main()
     vec3 ambient = ambientStrengh * lightColor;
 
     // diffuse
-    vec3 norm     = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff    = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse  = diff * lightColor;
+    vec3  norm     = normalize(Normal);
+    vec3  lightDir = normalize(lightPos - FragPos);
+    float diff     = max(dot(norm, lightDir), 0.0);
+    vec3  diffuse  = diff * lightColor;
 
     // specular
     float specStrength = 0.5;
