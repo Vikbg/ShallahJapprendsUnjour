@@ -18,7 +18,7 @@ public:
     unsigned int VAO = 0, VBO = 0;
     int vertexCount = 0;
     std::unique_ptr<Shader> shader;
-    GLint modelLoc = 0, viewLoc = 0, projLoc = 0, timeLoc = 0;
+    GLint modelLoc, viewLoc, projLoc, timeLoc, lightPosLoc, lightColorLoc, viewPosLoc;
     glm::mat4 projection;
     Camera camera;
 
@@ -46,6 +46,9 @@ public:
 
         shader->use();
 
+        glm::vec3 lightPos   = {2.0f, 4.0f, 3.0f};
+        glm::vec3 lightColor = {1.0f, 1.0f, 1.0f};
+
         glm::mat4 model = glm::mat4(1.0f);
         
         model = glm::rotate(model, glm::radians(currentTime * 0.09f), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -56,7 +59,10 @@ public:
         glm::mat4 view = camera.getViewMatrix();
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -6.0f));
 
-        glUniform3fv(shader->getUniformLocation("viewPos"), 1, glm::value_ptr(camera.position));
+        glUniform3fv(lightPosLoc,   1, glm::value_ptr(lightPos));
+        glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
+        glUniform3fv(viewPosLoc,    1, glm::value_ptr(camera.position));
+
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -141,6 +147,10 @@ private:
         viewLoc = shader->getUniformLocation("view");
         projLoc = shader->getUniformLocation("projection");
         timeLoc = shader->getUniformLocation("time");
+
+        lightPosLoc     = shader->getUniformLocation("lightPos");
+        lightColorLoc   = shader->getUniformLocation("lightColor");
+        viewPosLoc      = shader->getUniformLocation("viewPos");        
 
         projection = glm::perspective(glm::radians(90.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     }
