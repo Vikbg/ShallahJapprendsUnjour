@@ -3,8 +3,9 @@
 #include <string>
 
 struct Vertex {
-    float x, y, z;
-    float r, g, b;
+    float x, y, z;      // pos
+    float nx, ny, nz;   // normals
+    float r, g, b;      // color
 };
 
 class ModelLoader {
