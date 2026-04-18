@@ -130,7 +130,17 @@ std::vector<Vertex> ModelLoader::loadOBJ(const std::string& filename) {
                     b = materials[mat_id].diffuse[2];
                 }
 
-                vertices.push_back({vx, vy, vz, r, g, b});
+                // Normals
+
+                float nx = 0, ny = 1, nz = 0; // fallback
+                if (index.normal_index >= 0)
+                {
+                    nx = attrib.normals[3 * index.normal_index + 0];
+                    ny = attrib.normals[3 * index.normal_index + 1];
+                    nz = attrib.normals[3 * index.normal_index + 2];
+                }
+
+                vertices.push_back({vx, vy, vz, nx, ny, nz, r, g, b});
             }
             vertex_offset += fv;
         }
