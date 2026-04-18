@@ -123,7 +123,7 @@ std::vector<Vertex> ModelLoader::loadOBJ(const std::string& filename) {
                 g = materials[mat_id].diffuse[1];
                 b = materials[mat_id].diffuse[2];
             } // Or fallback on rgb vertex color
-            else if (!hasVertexColors) 
+            else if (hasVertexColors) 
             {
                 r = attrib.colors[3 * index.vertex_index + 0];
                 g = attrib.colors[3 * index.vertex_index + 1];
