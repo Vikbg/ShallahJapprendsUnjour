@@ -17,7 +17,7 @@ int main()
         Engine engine;
 
         // for capture the mouse pos ect and hide it
-        SDL_SetWindowRelativeMouseMode(engine.getWindow(), true);
+        SDL_SetWindowRelativeMouseMode(engine.window.getWindow(), true);
 
         Uint64 lastTime = SDL_GetTicks();
         int frameCount = 0;
@@ -36,12 +36,22 @@ int main()
                 }
                 if (event.type == SDL_EVENT_WINDOW_RESIZED ||
                     event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
-                        engine.updateViewport();
+                        engine.window.updateViewport();
                 }
 
                 if (event.type == SDL_EVENT_MOUSE_MOTION)
                 {
                     engine.camera.processMouse(event.motion.xrel, event.motion.yrel);
+                }
+
+                if (event.key.down && SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_F11])
+                {
+                    SDL_SetWindowFullscreen(engine.window.getWindow(), true);
+                }
+
+                if (event.key.down && SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_ESCAPE])
+                {
+                    return done = true;
                 }
             }
 
@@ -54,10 +64,10 @@ int main()
                 frameCount = 0;
                 lastTime = currentTime;
 
-                SDL_SetWindowTitle(engine.getWindow(), (std::string(WINDOW_TITLE) + " - FPS: " + std::to_string(fps)).c_str());
+                SDL_SetWindowTitle(engine.window.getWindow(), (std::string(WINDOW_TITLE) + " - FPS: " + std::to_string(fps)).c_str());
             }
 
-            engine.camera.processKeybord((SDL_GetKeyboardState((nullptr))));
+            engine.camera.processKeybord((SDL_GetKeyboardState(nullptr)));
 
             engine.render(currentTime);
         }

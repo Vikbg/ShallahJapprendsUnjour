@@ -25,6 +25,7 @@ add_executable(opengl_triangle
   src/read_file.cpp
   src/model_loader.cpp
   src/vendors.cpp
+  src/window_manager.cpp
 )
 
 target_include_directories(opengl_triangle PRIVATE include)

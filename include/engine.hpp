@@ -8,23 +8,22 @@
 #include "config.hpp"
 #include "model_loader.hpp"
 #include "camera.hpp"
+#include "window_manager.hpp"
 
 
 class Engine
 {
 public:
-    SDL_Window *window = nullptr;
+    Window window;
     SDL_GLContext gl_context = nullptr;
     unsigned int VAO = 0, VBO = 0;
     int vertexCount = 0;
     std::unique_ptr<Shader> shader;
     GLint modelLoc, viewLoc, projLoc, timeLoc, lightPosLoc, lightColorLoc, viewPosLoc;
-    glm::mat4 projection;
     Camera camera;
 
     Engine()
     {
-        init_sdl();
         init_opengl_glad();
         setup_geometry();
         init_shaders();
@@ -34,7 +33,6 @@ public:
     {
         if (VAO) glDeleteVertexArrays(1, &VAO);
         if (VBO) glDeleteBuffers(1, &VBO);
-        if (window) SDL_DestroyWindow(window);
         if (gl_context) SDL_GL_DestroyContext(gl_context);
         SDL_Quit();
     }
@@ -65,41 +63,20 @@ public:
 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(window.projection));
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         glBindVertexArray(0);
 
-        SDL_GL_SwapWindow(window);
+        SDL_GL_SwapWindow(window.getWindow());
     }
-
-    void updateViewport()
-    {
-        int width = 0;
-        int height = 0;
-        SDL_GetWindowSizeInPixels(window, &width, &height);
-        glViewport(0, 0, width, height);
-        projection = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 100.0f);
-    }
-
-    SDL_Window* getWindow() const { return window; }
 
 private:
 
-    void init_sdl()
-    {
-        if (!SDL_Init(SDL_FLAGS))
-            throw std::runtime_error(std::string("SDL initialization failed: ") + SDL_GetError());
-
-        window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_FLAGS);
-        if (!window)
-            throw std::runtime_error(std::string("Could not create window: ") + SDL_GetError());
-    }
-
     void init_opengl_glad()
     {
-        gl_context = SDL_GL_CreateContext(window);
+        gl_context = SDL_GL_CreateContext(window.getWindow());
         if (!gl_context)
             throw std::runtime_error(std::string("OpenGL Context creation failed: ") + SDL_GetError());
 
@@ -152,6 +129,6 @@ private:
         lightColorLoc   = shader->getUniformLocation("lightColor");
         viewPosLoc      = shader->getUniformLocation("viewPos");        
 
-        projection = glm::perspective(glm::radians(90.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        window.projection = glm::perspective(glm::radians(90.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
     }
 };

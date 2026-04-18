@@ -23,6 +23,8 @@ void Window::updateViewport()
     projection = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 100.0f);
 }
 
+SDL_Window* Window::getWindow() const { return window; }
+
 void Window::init_sdl()
 {
     if (!SDL_Init(SDL_FLAGS))

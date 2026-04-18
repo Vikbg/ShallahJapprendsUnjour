@@ -17,6 +17,8 @@ public:
 
     void updateViewport();
 
+    SDL_Window* getWindow() const;
+
 private:
     void init_sdl();
 };
