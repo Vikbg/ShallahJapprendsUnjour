@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "config.hpp"
 #include "model_loader.hpp"
+#include "camera.hpp"
 
 
 class Engine
@@ -19,6 +20,7 @@ public:
     std::unique_ptr<Shader> shader;
     GLint modelLoc = 0, viewLoc = 0, projLoc = 0, timeLoc = 0;
     glm::mat4 projection;
+    Camera camera;
 
     Engine()
     {
@@ -51,9 +53,10 @@ public:
         model = glm::rotate(model, glm::radians(currentTime * 0.12f), glm::vec3(1.0f, 0.0f, 0.0f));
         
 
-        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 view = camera.getViewMatrix();
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -6.0f));
 
+        glUniform3fv(shader->getUniformLocation("viewPos"), 1, glm::value_ptr(camera.position));
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));

@@ -1,10 +1,12 @@
 #version 330 core
 
+in vec3 Color;
+in vec3 FragPos;
+
 // Output du shader
 out vec4 FragColor;
-in vec3 vertexColor;
 
 void main()
 {
-    FragColor = vec4(vertexColor, 1.0);
+    FragColor = vec4(Color, 1.0);
 }

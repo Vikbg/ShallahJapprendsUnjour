@@ -71,12 +71,12 @@ std::vector<Vertex> ModelLoader::loadOBJ(const std::string& filename) {
     const std::vector<tinyobj::material_t>& materials = reader.GetMaterials();
     const bool hasVertexColors = attrib.colors.size() == attrib.vertices.size();
 
-    std::cerr << "Materials loaded: " << materials.size() << "\n";
+    /* std::cerr << "Materials loaded: " << materials.size() << "\n";
     for (size_t i = 0; i < materials.size(); i++) {
         std::cerr << "  Material " << i << " (" << materials[i].name << "): Kd = (" 
                   << materials[i].diffuse[0] << ", " << materials[i].diffuse[1] << ", " 
                   << materials[i].diffuse[2] << ")\n";
-    }
+    } */
 
     std::vector<Vertex> vertices;
     vertices.reserve(shapes.size() * 3);
@@ -85,7 +85,7 @@ std::vector<Vertex> ModelLoader::loadOBJ(const std::string& filename) {
         const auto& mesh = shape.mesh;
         size_t vertex_offset = 0;
         
-        std::cerr << "Shape: " << shape.name << " has " << mesh.num_face_vertices.size() << " faces\n";
+        // std::cerr << "Shape: " << shape.name << " has " << mesh.num_face_vertices.size() << " faces\n";
         
         for (size_t f = 0; f < mesh.num_face_vertices.size(); f++) {
             int fv = mesh.num_face_vertices[f];

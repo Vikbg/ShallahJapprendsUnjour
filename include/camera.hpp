@@ -28,9 +28,9 @@ class Camera {
 
         void processKeybord(const bool* keys)
         {
-            if (keys[SDL_SCANCODE_Z]) position += front * speed;  // go forward
+            if (keys[SDL_SCANCODE_W]) position += front * speed;  // go forward
             if (keys[SDL_SCANCODE_S]) position -= front * speed;  // backward
-            if (keys[SDL_SCANCODE_Q]) position -= right * speed;  // left
+            if (keys[SDL_SCANCODE_A]) position -= right * speed;  // left
             if (keys[SDL_SCANCODE_D]) position += right * speed;  // right
         }
     

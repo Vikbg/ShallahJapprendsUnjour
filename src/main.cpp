@@ -16,6 +16,9 @@ int main()
     {
         Engine engine;
 
+        // for capture the mouse pos ect and hide it
+        SDL_SetWindowRelativeMouseMode(engine.getWindow(), true);
+
         Uint64 lastTime = SDL_GetTicks();
         int frameCount = 0;
         float fps = 0.0f;
@@ -35,6 +38,11 @@ int main()
                     event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
                         engine.updateViewport();
                 }
+
+                if (event.type == SDL_EVENT_MOUSE_MOTION)
+                {
+                    engine.camera.processMouse(event.motion.xrel, event.motion.yrel);
+                }
             }
 
             Uint64 currentTime = SDL_GetTicks();
@@ -48,6 +56,8 @@ int main()
 
                 SDL_SetWindowTitle(engine.getWindow(), (std::string(WINDOW_TITLE) + " - FPS: " + std::to_string(fps)).c_str());
             }
+
+            engine.camera.processKeybord((SDL_GetKeyboardState((nullptr))));
 
             engine.render(currentTime);
         }
