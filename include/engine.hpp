@@ -46,8 +46,8 @@ public:
 
         shader->use();
 
-        glm::vec3 lightPos   = {2.0f, 4.0f, 3.0f};
-        glm::vec3 lightColor = {1.0f, 1.0f, 1.0f};
+        glm::vec3 lightPos   = glm::vec3(2.0f, 4.0f, 3.0f);
+        glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
         glm::mat4 model = glm::mat4(1.0f);
         
