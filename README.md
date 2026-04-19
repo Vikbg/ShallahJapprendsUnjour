@@ -8,5 +8,5 @@ It currently supports model loading with MTL textures and light sources. It also
 
 The project is not finished yet. The [engine](include/engine.hpp) needs to be refactored, and additional features still need to be implemented.
 
-If you like the project, consider giving it a star.
+If you like the project, consider giving it a star.  
 Thank you!
